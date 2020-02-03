@@ -12,8 +12,11 @@
 (function (){
   // const SOLID_BLOCK = '■';
   // const SOLID_BLOCK = '#';
-  const SOLID_BLOCK = '⬛';
-  const EMPTY_BLOCK = ' ';
+//  const SOLID_BLOCK = '⬛';
+//  const EMPTY_BLOCK = ' ';
+  const SOLID_BLOCK = '■';
+  const EMPTY_BLOCK = '□';
+
   function percentSolid(board, x, y, context=1) {
     let xLen = x+context;
     let yLen = y+context;
@@ -27,7 +30,7 @@
         if (!board[myY][myX]) {
           break;
         }
-				iter++;
+	      iter++;
         // console.log(`${myY} ${myX} ${yLen} ${xLen}`)
         if(board[myY][myX] === SOLID_BLOCK) {
           solid++;
