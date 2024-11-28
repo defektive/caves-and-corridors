@@ -17,6 +17,21 @@
   const SOLID_BLOCK = '■';
   const EMPTY_BLOCK = ' ';
 
+  const screenWidth = window.visualViewport.width ;
+  const screenHeight = window.visualViewport.height ;
+  const blockWidth = 5;
+  const boardWidth = Math.round(screenWidth/blockWidth);
+  const boardHeight = Math.round(screenHeight/blockWidth);
+
+
+  let iterations = 7;
+	let time = 100;
+	let context = 1;
+	let contextChange = .3;
+  let solidChance = 4.8;
+  let solidPercentThreshold = .53;
+
+
   function percentSolid(board, x, y, context=1) {
     let xLen = x+context;
     let yLen = y+context;
@@ -53,7 +68,7 @@
 		switch (true) {
 			// case 0:
 			// 	return SOLID_BLOCK;
-			case pr < .56:
+			case pr < solidPercentThreshold:
 				return EMPTY_BLOCK;
 		}
 		return SOLID_BLOCK
@@ -77,33 +92,25 @@
     }).join("\n");
   }
 
-  const screenWidth = window.visualViewport.width ;
-  const screenHeight = window.visualViewport.height ;
-  const blockWidth = 5;
-  const boardWidth = Math.round(screenWidth/blockWidth);
-  const boardHeight = Math.round(screenHeight/blockWidth);
-
   let board = [];
   for (let y = 0; y <= boardHeight; y++) {
     let row = board[y] = board[y] || [];
     for (let x =0; x <= boardWidth; x++) {
-      row.push(Math.random() * 10 <= 6.6 ? SOLID_BLOCK : EMPTY_BLOCK);
+      row.push(Math.random() * 10 <= solidChance ? SOLID_BLOCK : EMPTY_BLOCK);
     }
   }
   render(board);
-  let iterations = 5;
-	let time = 100;
-	let context = 1;
 
   function tick() {
     let newBoard = normalize(board, context);
     render(newBoard);
 		board = newBoard;
-		if(context < 2) {
-			context++
-		} else {
-			// context = 1;
-		}
+    context = Math.round(context + (context * contextChange));
+		// if(context < 2) {
+		// 	context++
+		// } else {
+		// 	// context = 1;
+		// }
     if (iterations--) {
       setTimeout(tick, time);
     }
