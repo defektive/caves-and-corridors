@@ -79,9 +79,9 @@
 
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
-  const blockWidth = 16;
-  const boardWidth = Math.round(screenWidth/16);
-  const boardHeight = Math.round(screenHeight/16);
+  const blockWidth = 5;
+  const boardWidth = Math.round(screenWidth/blockWidth);
+  const boardHeight = Math.round(screenHeight/blockWidth);
 
   let board = [];
   for (let y = 0; y <= boardHeight; y++) {
