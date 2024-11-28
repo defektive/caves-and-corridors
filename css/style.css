@@ -12,7 +12,67 @@ body, html {
   position: absolute;
   top: -1px;
   bottom: -1px;
-  left: -1px;
-  right: -1px;
+  left: 350px;
+  right: 350px;
   overflow: hidden;
+}
+
+/* .block {
+  display: inline-block;
+  height: 5px;
+  width: 5px;
+}
+
+.block.solid {
+  color: #000;
+  background-color: #000;
+} */
+
+.battle {
+  color: #f39;
+}
+.player {
+  color: #00bb19;
+}
+
+.card {
+  position: absolute;
+
+  width: 200px;
+  height: 141px;
+
+  background: #fff;
+  border: 20px solid #f39;
+  border-radius: 3%;
+}
+
+#card-spot-a1 {
+  top: 50px;
+  left: 100px;
+}
+
+#card-spot-a2 {
+  top: 270px;
+  left: 100px;
+}
+
+#card-spot-a3 {
+  top: 490px;
+  left: 100px;
+}
+
+
+#card-spot-b1 {
+  top: 50px;
+  right: 100px;
+}
+
+#card-spot-b2 {
+  top: 270px;
+  right: 100px;
+}
+
+#card-spot-b3 {
+  top: 490px;
+  right: 100px;
 }

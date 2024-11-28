@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script type="text/javascript" src="js/app.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+
+<body>
+
+  <div id="app"></div>
+
+  <div id="card-spot-a1" class="card"></div>
+  <div id="card-spot-a2" class="card"></div>
+  <div id="card-spot-a3" class="card"></div>
+
+
+  <div id="card-spot-b1" class="card"></div>
+  <div id="card-spot-b2" class="card"></div>
+  <div id="card-spot-b3" class="card"></div>
+
+  <script type="text/javascript">
+    (function (appEl) {
+      // const SOLID_BLOCK = '■';
+      // const SOLID_BLOCK = '#';
+      //  const SOLID_BLOCK = '⬛';
+      //  const EMPTY_BLOCK = ' ';
+
+      // const SOLID_BLOCK = '<span class="block solid"> </span>';
+      // const EMPTY_BLOCK = '<span class="block empty"> </span>';
+      // const BATTLE_BLOCK = '<span class="battle">@</span>';
+      const SOLID_BLOCK = '■';
+      const EMPTY_BLOCK = ' ';
+      const BATTLE_BLOCK = '<span class="battle">@</span>';
+      const PLAYER_BLOCK = '<span class="player">!</span>';
+
+      const screenWidth = appEl.clientWidth;
+      const screenHeight = appEl.clientHeight;
+      const blockWidth = 5;
+      const boardWidth = Math.round(screenWidth / blockWidth);
+      const boardHeight = Math.round(screenHeight / blockWidth);
+
+      let currentBoard;
+      let iterations = 7;
+      let time = 100;
+      let context = 1;
+      let contextChange = .3;
+      let solidChance = 4.8;
+      let solidPercentThreshold = .53;
+
+
+      function blockInContextPercent(block, board, x, y, context = 1) {
+        let xLen = x + context;
+        let yLen = y + context;
+        let solid = 0;
+        let iter = 0;
+        for (myY = y - context; myY <= yLen; myY++) {
+          if (!board[myY]) {
+            break;
+          }
+          for (myX = x - context; myX <= xLen; myX++) {
+            if (!board[myY][myX]) {
+              break;
+            }
+            iter++;
+            // console.log(`${myY} ${myX} ${yLen} ${xLen}`)
+            if (board[myY][myX] === block) {
+              solid++;
+            }
+          }
+        }
+        return (solid / iter);
+      }
+
+
+      function percentSolid(board, x, y, context = 1) {
+        return blockInContextPercent(SOLID_BLOCK, board, x, y, context = 1)
+      }
+
+      function normalizeTile(board, x, y, context = 1) {
+        if (
+          x <= 0 ||
+          x >= boardWidth ||
+          y <= 0 ||
+          y >= boardHeight
+        ) {
+          return SOLID_BLOCK;
+        }
+        let pr = percentSolid(board, x, y, context)
+        switch (true) {
+          // case 0:
+          // 	return SOLID_BLOCK;
+          case pr < solidPercentThreshold:
+            return EMPTY_BLOCK;
+        }
+        return SOLID_BLOCK
+      }
+
+      function normalize(board, context) {
+        let newBoard = [];
+        for (let y = 0; y <= boardHeight; y++) {
+          let row = newBoard[y] = newBoard[y] || [];
+          for (let x = 0; x <= boardWidth; x++) {
+            row.push(normalizeTile(board, x, y, context));
+          }
+        }
+        return newBoard;
+      }
+
+      function render(board) {
+        currentBoard = board;
+        let el = document.getElementById('app');
+        el.innerHTML = board.map((row) => {
+          return row.join('');
+        }).join("\n");
+      }
+
+      let board = [];
+      for (let y = 0; y <= boardHeight; y++) {
+        let row = board[y] = board[y] || [];
+        for (let x = 0; x <= boardWidth; x++) {
+          row.push(Math.random() * 10 <= solidChance ? SOLID_BLOCK : EMPTY_BLOCK);
+        }
+      }
+      render(board);
+
+      function populate(board) {
+        populateBattles(board);
+        populatePlayer(board);
+
+        render(board);
+      }
+
+      
+      function populateBattles(board) {
+        for (let y = 0; y <= boardHeight; y++) {
+          for (let x = 0; x <= boardWidth; x++) {
+            if (blockInContextPercent(BATTLE_BLOCK, board, x, y, 9) == 0) {
+              if (percentSolid(board, x, y, 4) < 0.2) {
+                if (Math.random() * 10 > 8.9) {
+
+                  if (blockInContextPercent(BATTLE_BLOCK, board, x, y, 15) < 0.01) {
+
+                    console.log(blockInContextPercent(BATTLE_BLOCK, board, x, y, 12))
+
+                    board[y][x] = BATTLE_BLOCK;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      let playerX=0;
+      let playerY=0;
+
+      function populatePlayer(board) {
+        for (let y = 0; y <= boardHeight; y++) {
+          for (let x = 0; x <= boardWidth; x++) {
+            if (blockInContextPercent(BATTLE_BLOCK, board, x, y, 9) == 0) {
+              if (percentSolid(board, x, y, 4) < 0.02) {
+                board[y][x] = PLAYER_BLOCK;
+                playerX = x;
+                playerY = y;
+                return
+              }
+            }
+          }
+        }
+      }
+
+      function movePlayer(dir) {
+        currentBoard[playerY][playerX] = EMPTY_BLOCK;
+
+        switch (dir) {
+          case "north":
+            playerY -= 1;
+            break;
+          case "east":
+            playerX += 1;
+            break;
+          case "south":
+            playerY += 1;
+            break;
+          case "west":
+            playerX -= 1;
+            break;
+        }
+        
+        currentBoard[playerY][playerX] = PLAYER_BLOCK;
+
+        render(currentBoard)
+
+      }
+
+      function tick() {
+        let newBoard = normalize(board, context);
+        render(newBoard);
+        board = newBoard;
+        context = Math.round(context + (context * contextChange));
+        // if(context < 2) {
+        // 	context++
+        // } else {
+        // 	// context = 1;
+        // }
+        if (iterations--) {
+          setTimeout(tick, time);
+        } else {
+          populate(board);
+        }
+      }
+      setTimeout(tick, time)
+
+
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key == "w") {
+          movePlayer("north");
+        }
+        if (e.key == "s") {
+          movePlayer("south");
+        }
+        if (e.key == "a") {
+          movePlayer("west");
+        }
+        if (e.key == "d") {
+          movePlayer("east");
+        }
+      });
+
+    })(document.getElementById("app"));
+  </script>
+</body>
+
+</html>
