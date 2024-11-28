@@ -15,7 +15,7 @@
 //  const SOLID_BLOCK = '⬛';
 //  const EMPTY_BLOCK = ' ';
   const SOLID_BLOCK = '■';
-  const EMPTY_BLOCK = '□';
+  const EMPTY_BLOCK = ' ';
 
   function percentSolid(board, x, y, context=1) {
     let xLen = x+context;
@@ -77,8 +77,8 @@
     }).join("\n");
   }
 
-  const screenWidth = window.screen.width;
-  const screenHeight = window.screen.height;
+  const screenWidth = window.visualViewport.width ;
+  const screenHeight = window.visualViewport.height ;
   const blockWidth = 5;
   const boardWidth = Math.round(screenWidth/blockWidth);
   const boardHeight = Math.round(screenHeight/blockWidth);

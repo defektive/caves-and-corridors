@@ -1,7 +1,18 @@
-body {
+body, html {
   font-family: monospace;
   font-size: 12px;
-  letter-spacing: -3px;
+  letter-spacing: -2px;
   line-height: 5px;
   white-space: pre;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: -1px;
+  right: -1px;
+  overflow: hidden;
 }
